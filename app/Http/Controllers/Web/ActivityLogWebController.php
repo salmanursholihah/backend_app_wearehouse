@@ -35,7 +35,7 @@ class ActivityLogWebController extends Controller
     {
         $this->superAdmin();
 
-        return view('pages.activity_logs.index', [
+        return view('pages.logs.activity', [
             'logs'=>ActivityLog::with('user')->latest()->paginate(20)
         ]);
     }

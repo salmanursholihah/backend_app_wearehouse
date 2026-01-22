@@ -58,6 +58,7 @@ class DashboardWebController extends Controller
             'pending_requests' => ItemRequest::where('status','pending')->count(),
             'total_stock'    => Product::sum('stock'),
             'latest_requests'=> ItemRequest::with('user')->latest()->take(5)->get(),
+            'low_stock_products' => Product::where('stock','<=',10)->latest()->take(5)->get(),
         ]);
     }
 

@@ -14,7 +14,7 @@ class RequestWebController extends Controller
     {
         $this->adminOnly();
 
-        return view('pages.requests.index', [
+        return view('pages.request.index', [
             'requests' => ItemRequest::with('user','items.product')->latest()->get()
         ]);
     }

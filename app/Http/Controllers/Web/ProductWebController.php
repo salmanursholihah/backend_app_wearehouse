@@ -11,14 +11,14 @@
 // {
 //     public function index()
 //     {
-//         return view('pages.products.index', [
+//         return view('pages.product.index', [
 //             'products' => Product::latest()->get()
 //         ]);
 //     }
 
 //     public function create()
 //     {
-//         return view('pages.products.create');
+//         return view('pages.product.create');
 //     }
 
 //     public function store(Request $request)
@@ -43,7 +43,7 @@
 
 //     public function edit(Product $product)
 //     {
-//         return view('pages.products.edit', compact('product'));
+//         return view('pages.product.edit', compact('product'));
 //     }
 
 //     public function update(Request $request, Product $product)
@@ -85,7 +85,7 @@ class ProductWebController extends Controller
     public function index()
     {
         $this->adminOnly();
-        return view('pages.products.index', [
+        return view('pages.product.index', [
             'products' => Product::latest()->get()
         ]);
     }
@@ -93,7 +93,7 @@ class ProductWebController extends Controller
     public function create()
     {
         $this->adminOnly();
-        return view('pages.products.create');
+        return view('pages.product.create');
     }
 
     public function store(Request $request)
@@ -120,7 +120,7 @@ class ProductWebController extends Controller
     public function edit(Product $product)
     {
         $this->adminOnly();
-        return view('pages.products.edit', compact('product'));
+        return view('pages.product.edit', compact('product'));
     }
 
     public function update(Request $request, Product $product)

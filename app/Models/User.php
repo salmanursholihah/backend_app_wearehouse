@@ -43,4 +43,9 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+
+    public function ActifityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
 }

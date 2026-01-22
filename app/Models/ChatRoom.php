@@ -31,4 +31,8 @@ class ChatRoom extends Model
             'sender_id'     // FK user di chat_messages
         )->distinct();
     }
+
+    public function users(){
+        return $this->hasMany(User::class);
+    }
 }

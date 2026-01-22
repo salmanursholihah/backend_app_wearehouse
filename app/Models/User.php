@@ -48,4 +48,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    public function ChatRoom(){
+        return $this->belongsTo(ChatRoom::class);
+    }
 }

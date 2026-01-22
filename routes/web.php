@@ -77,14 +77,14 @@ Route::middleware('auth')->group(function () {
     /*
     | USERS
     */
-   Route::get('/users', [UserWebController::class, 'index'])
-        ->name('users.index');
+    Route::resource('users', UserWebController::class);
 
     Route::post('/users/{user}/toggle', [UserWebController::class, 'toggle'])
         ->name('users.toggle');
 
     Route::post('/users/{user}/role', [UserWebController::class, 'updateRole'])
         ->name('users.role');
+
 
 
 
@@ -103,11 +103,11 @@ Route::middleware('auth')->group(function () {
     /*
     | CHAT
     */
-    Route::get('/chat', [ChatWebController::class, 'index'])
-        ->name('chat.index');
-
-    Route::get('/chat/{roomId}', [ChatWebController::class, 'show'])
-        ->name('chat.show');
-    Route::post('/chat/{roomId}/send', [ChatWebController::class, 'send'])
-        ->name('chat.send');
+Route::prefix('chat')->name('pages.chat.')->middleware('auth')->group(function () {
+    Route::get('/', [ChatWebController::class, 'index'])->name('index');
+    Route::get('/start/{user}', [ChatWebController::class, 'start'])->name('start');
+    Route::get('/{room}', [ChatWebController::class, 'room'])->name('room');
+    Route::post('/send', [ChatWebController::class, 'send'])->name('send');
+    
+    });
 });

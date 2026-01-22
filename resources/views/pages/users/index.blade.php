@@ -2,8 +2,14 @@
 @section('title','Manajemen User')
 
 @section('content')
-<div class="section-header d-flex justify-content-between">
+
+<div class="section-header d-flex justify-content-between align-items-center">
     <h1>Manajemen User</h1>
+
+    {{-- TOMBOL TAMBAH --}}
+    <a href="{{ route('users.create') }}" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Tambah User
+    </a>
 </div>
 
 <div class="card">
@@ -24,9 +30,7 @@
             <tbody>
                 @forelse($users as $user)
                 <tr>
-                    <td>
-                        <strong>{{ $user->name }}</strong>
-                    </td>
+                    <td><strong>{{ $user->name }}</strong></td>
                     <td>{{ $user->email }}</td>
                     <td>
                         <span class="badge badge-{{ $user->is_active ? 'success' : 'danger' }}">
@@ -34,10 +38,20 @@
                         </span>
                     </td>
                     <td class="text-center">
-                        <form action="{{ route('users.toggle', $user->id) }}" method="POST">
+
+                        {{-- EDIT --}}
+                        <a href="{{ route('users.edit', $user->id) }}"
+                           class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        {{-- TOGGLE STATUS --}}
+                        <form action="{{ route('users.toggle', $user->id) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Ubah status user?')">
                             @csrf
-                            <button class="btn btn-sm {{ $user->is_active ? 'btn-danger' : 'btn-success' }}"
-                                onclick="return confirm('Ubah status user?')">
+                            <button class="btn btn-sm {{ $user->is_active ? 'btn-danger' : 'btn-success' }}">
                                 {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                             </button>
                         </form>
@@ -55,4 +69,5 @@
         </table>
     </div>
 </div>
+
 @endsection

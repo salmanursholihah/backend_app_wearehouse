@@ -52,8 +52,8 @@
                 </a>
             </li>
 
-            <li class="{{ request()->routeIs('chat.index') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('chat.index') }}">
+            <li class="{{ request()->routeIs('pages.chat.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('pages.chat.index') }}">
                     <i class="fas fa-comments"></i> <span>Chat</span>
                 </a>
             </li>

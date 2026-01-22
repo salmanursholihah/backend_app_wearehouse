@@ -12,6 +12,10 @@
     </div>
 
     <div class="card-body table-responsive">
+        <a href="{{ route('product.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Tambah Product
+    </a>
+    <br>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -19,6 +23,7 @@
                     <th>Nama Product</th>
                     <th>Stock</th>
                     <th>Unit</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,6 +37,24 @@
                         </span>
                     </td>
                     <td>{{ $product->unit }}</td>
+                                    <td class="text-center">
+                        <a href="{{ route('product.edit', $product->id) }}"
+                           class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <form action="{{ route('product.destroy', $product->id) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Yakin hapus produk ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+
                 </tr>
             @empty
                 <tr>

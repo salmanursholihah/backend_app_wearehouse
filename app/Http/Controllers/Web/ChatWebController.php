@@ -5,24 +5,26 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\ChatRoom;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ChatWebController extends Controller
 {
     /**
      * LIST CHAT ROOM USER LOGIN
      */
+
     public function index()
-    {
-        $rooms = ChatRoom::whereHas('participants', function ($q) {
-                $q->where('users.id', Auth::id());
-            })
-            ->with('participants')
-            ->latest()
-            ->get();
+{
+    $users = User::where('id', '!=', auth()->id())
+        ->where('is_active', true)
+        ->get();
 
-        return view('pages.chat.index', compact('rooms'));
-    }
+    $rooms = ChatRoom::whereHas('users', function ($q) {
+        $q->where('users.id', auth()->id());
+    })->with('messages')->get();
 
+    return view('pages.chat.index', compact('users', 'rooms'));
+}
     /**
      * DETAIL CHAT ROOM
      */

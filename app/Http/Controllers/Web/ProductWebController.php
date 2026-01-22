@@ -114,7 +114,7 @@ class ProductWebController extends Controller
             'created_by'=>auth()->id()
         ]);
 
-        return redirect()->route('products.index')->with('success','Produk ditambahkan');
+        return redirect()->route('product.index')->with('success','Produk ditambahkan');
     }
 
     public function edit(Product $product)

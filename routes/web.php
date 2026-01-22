@@ -1,78 +1,113 @@
 <?php
 
-use App\Http\Controllers\Web\AuthWebController;
-use App\Http\Controllers\Web\DashboardWebController;
-use App\Http\Controllers\Web\LaporanGudangController;
-use App\Http\Controllers\Web\ChatWebController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\{
+    AuthWebController,
+    DashboardWebController,
+    ProductWebController,
+    RequestWebController,
+    UserWebController,
+    AdminWebController,
+    ActivityLogWebController,
+    ChatWebController
+};
 
-Route::get('/login', [AuthWebController::class, 'loginForm'])->name('login');
-Route::post('/login', [AuthWebController::class, 'login']);
-Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
+/*
+|--------------------------------------------------------------------------
+| ROOT
+|--------------------------------------------------------------------------
+*/
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
-// Route::middleware(['auth'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| AUTH (GUEST ONLY)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthWebController::class, 'loginForm'])
+        ->name('login');
 
-//     Route::get('/', [DashboardWebController::class, 'index']);
-//     Route::get('/dashboard', [DashboardWebController::class, 'index'])->name('dashboard');
+    Route::post('/login', [AuthWebController::class, 'login'])
+        ->name('login.process');
 
-//     // REQUEST
-//     Route::prefix('report')
-//         ->name('pages.report.')
-//         ->group(function () {
-
-//             Route::get('/stock', [LaporanGudangController::class, 'stock'])
-//                 ->name('stock');
-
-//             Route::get('/request', [LaporanGudangController::class, 'request'])
-//                 ->name('request');
-
-//         });
-
-//     //REQUEST
-//     Route::resource('request', \App\Http\Controllers\Web\RequestWebController::class, ['as' => 'pages']);
-
-//     //PRODUCTS
-//     Route::resource('product', \App\Http\Controllers\Web\ProductWebController::class, ['as' => 'pages']);
-
-//     //REPORT
-//     Route::prefix('report')->name('pages.report.')->group(function () {
-
-//     Route::get('/stock', function () {
-//         return view('pages.report.stock');
-//     })->name('stock');
-
-//     Route::get('/request', function () {
-//         return view('pages.report.request');
-//     })->name('request');
-
-// });
+    Route::get('/register', [AuthWebController::class, 'registerForm'])
+        ->name('register');
+});
 
 
-//     // CHAT
-//     Route::get('/chat', [ChatWebController::class, 'index'])->name('pages.chat.index');
-//     Route::get('/chat/{room}', [ChatWebController::class, 'room'])->name('pages.chat.room');
-//     Route::post('/chat/send', [ChatWebController::class, 'send'])->name('pages.chat.send');
+/*
+|--------------------------------------------------------------------------
+| LOGOUT (AUTH ONLY)
+|--------------------------------------------------------------------------
+*/
+Route::post('/logout', [AuthWebController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-//     //USER
-//     Route::resource('users', \App\Http\Controllers\Web\UserWebController::class, ['as' => 'pages']);
-// });
+/*
+|--------------------------------------------------------------------------
+| PROTECTED (AUTH)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', [DashboardWebController::class, 'index'])
+        ->name('dashboard');
+
+    /*
+    | PRODUCTS
+    */
+    Route::resource('product', ProductWebController::class);
+
+    /*
+    | REQUEST BARANG
+    */
+    Route::get('/request', [RequestWebController::class, 'index'])
+        ->name('request.index');
+
+    Route::post('/request/{id}/approve', [RequestWebController::class, 'approve'])
+        ->name('request.approve');
+
+    Route::post('/request/{id}/reject', [RequestWebController::class, 'reject'])
+        ->name('request.reject');
+
+    /*
+    | USERS
+    */
+   Route::get('/users', [UserWebController::class, 'index'])
+        ->name('users.index');
+
+    Route::post('/users/{user}/toggle', [UserWebController::class, 'toggle'])
+        ->name('users.toggle');
+
+    Route::post('/users/{user}/role', [UserWebController::class, 'updateRole'])
+        ->name('users.role');
 
 
-Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', [DashboardWebController::class,'index']);
+    /*
+    | ADMIN
+    */
+    Route::get('/admin', [AdminWebController::class, 'index'])
+        ->name('admin.index');
 
-    Route::get('/users', [UserWebController::class,'index']);
-    Route::put('/users/{user}/role', [UserWebController::class,'updateRole']);
-    Route::put('/users/{user}/toggle', [UserWebController::class,'toggleStatus']);
+    /*
+    | ACTIVITY LOG
+    */
+    Route::get('/activity-log', [ActivityLogWebController::class, 'index'])
+        ->name('logs.activity');
 
-    Route::get('/admins', [AdminManagementController::class,'index']);
-    Route::post('/admins', [AdminManagementController::class,'store']);
-    Route::put('/admins/{user}/deactivate', [AdminManagementController::class,'deactivate']);
+    /*
+    | CHAT
+    */
+    Route::get('/chat', [ChatWebController::class, 'index'])
+        ->name('chat.index');
 
-    Route::resource('products', ProductWebController::class)->except(['show','create','edit']);
-
-    Route::get('/reports/stock', [WarehouseReportController::class,'stock']);
-    Route::get('/reports/request', [WarehouseReportController::class,'request']);
-
-    Route::get('/logs/activity', [ActivityLogWebController::class,'index']);
+    Route::get('/chat/{roomId}', [ChatWebController::class, 'show'])
+        ->name('chat.show');
+    Route::post('/chat/{roomId}/send', [ChatWebController::class, 'send'])
+        ->name('chat.send');
 });

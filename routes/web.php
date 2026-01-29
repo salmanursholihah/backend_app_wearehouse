@@ -11,7 +11,8 @@ use App\Http\Controllers\Web\{
     ActivityLogWebController,
     ChatWebController,
     RoleApprovalController,
-    RoleApprovalWebController
+    RoleApprovalWebController,
+    AboutUsWebController
 };
 
 /*
@@ -104,6 +105,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/role-requests/{id}/reject', [RoleApprovalWebController::class, 'reject'])
         ->name('super_admin.role_requests.reject');
 
+
+
+    /*
+    |ABOUT US
+    */
+    Route::get('/about-us', [AboutUsWebController::class, 'index']);
+    Route::post('/about-us', [AboutUsWebController::class, 'store']);
 
     /*
     | ADMIN

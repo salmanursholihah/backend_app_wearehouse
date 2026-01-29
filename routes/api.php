@@ -2,6 +2,7 @@
 
 <?php
 
+use App\Http\Controllers\Api\AboutUsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
@@ -74,5 +75,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [UserApiController::class, 'index']);
         Route::post('/users', [UserApiController::class, 'store']);
         Route::delete('/users/{id}', [UserApiController::class, 'destroy']);
+
+        Route::get ('about-us', [AboutUsController::class, 'index']);
+
     });
 });

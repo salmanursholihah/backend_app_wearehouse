@@ -9,12 +9,15 @@ use App\Http\Controllers\Web\{
     UserWebController,
     AdminWebController,
     ActivityLogWebController,
-    ChatWebController
+    ChatWebController,
+    RoleApprovalController,
+    RoleApprovalWebController
 };
 
 /*
 |--------------------------------------------------------------------------
-| ROOT
+| ROOTeb
+
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
@@ -89,6 +92,20 @@ Route::middleware('auth')->group(function () {
 
 
     /*
+    | REQUEST ADMIN ROLE
+    */
+
+    Route::get('/role-requests', [RoleApprovalWebController::class, 'index'])
+        ->name('super_admin.role_requests');
+
+    Route::post('/role-requests/{id}/approve', [RoleApprovalWebController::class, 'approve'])
+        ->name('super_admin.role_requests.approve');
+
+    Route::post('/role-requests/{id}/reject', [RoleApprovalWebController::class, 'reject'])
+        ->name('super_admin.role_requests.reject');
+
+
+    /*
     | ADMIN
     */
     Route::get('/admin', [AdminWebController::class, 'index'])
@@ -108,6 +125,6 @@ Route::prefix('chat')->name('pages.chat.')->middleware('auth')->group(function (
     Route::get('/start/{user}', [ChatWebController::class, 'start'])->name('start');
     Route::get('/{room}', [ChatWebController::class, 'room'])->name('room');
     Route::post('/send', [ChatWebController::class, 'send'])->name('send');
-    
+
     });
 });

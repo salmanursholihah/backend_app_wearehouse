@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\UserApiController;
+use App\Http\Controllers\Api\SuperAdmin\RoleApprovalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\UserApiController;
 */
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/chat', [ChatController::class, 'send']);
     Route::get('/chat/{room}', [ChatController::class, 'history']);
-
+    Route::post('/request-admin', [App\Http\Controllers\Api\User\RoleRequestController::class, 'requestAdmin']);
+    Route::get('/profile', [App\Http\Controllers\Api\ProfileController::class, 'profile']);
+    Route::put('/profile', [App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);
+    Route::post('/change-password', [App\Http\Controllers\Api\ChangePasswordController::class, 'update']);
     /*
     |--------------------------------------------------------------------------
     | ADMIN & SUPER ADMIN
@@ -52,6 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // REQUEST (GANTI process → approve / reject)
         Route::post('/requests/{id}/approve', [RequestController::class, 'approve']);
         Route::post('/requests/{id}/reject', [RequestController::class, 'reject']);
+
+        ///APPROVE USER REQUEST TO BE ADMIN
+        Route::get('/role-requests', [RoleApprovalController::class, 'index']);
+        Route::post('/role-requests/{id}/approve', [RoleApprovalController::class, 'approve']);
+        Route::post('/role-requests/{id}/reject', [RoleApprovalController::class, 'reject']);
     });
 
     /*

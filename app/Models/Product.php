@@ -16,6 +16,9 @@ public function requests()
                     ->withPivot('quantity', 'status')
                     ->withTimestamps();
     }
+    public function images(){
+        return $this->hasMany(ProductImage::class);
+    }
 }
 
 

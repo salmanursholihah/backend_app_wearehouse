@@ -28,6 +28,12 @@
                 </a>
             </li>
 
+            <li class="{{ request()->routeIs('super_admin.role_requests*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('super_admin.role_requests') }}">
+                    <i class="fas fa-users"></i> <span>Request User To be Admin</span>
+                </a>
+            </li>
+
             {{-- GUDANG --}}
             <li class="menu-header">Gudang</li>
 

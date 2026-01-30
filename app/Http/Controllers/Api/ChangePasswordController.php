@@ -7,29 +7,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 class ChangePasswordController extends Controller
 {
+    
+public function changePassword(Request $request)
+{
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
+    ]);
 
-    public function update(Request $request)
-    {
-        $user = $request->user();
+    $user = $request->user();
 
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed',
-        ]);
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json([
-                'message' => 'Password lama tidak sesuai'
-            ], 422);
-        }
-
-        $user->update([
-            'password' => Hash::make($request->new_password),
-        ]);
-
+    if (!Hash::check($request->current_password, $user->password)) {
         return response()->json([
-            'message' => 'Password berhasil diperbarui'
-        ]);
+            'message' => 'Password lama salah'
+        ], 422);
     }
+
+    $user->update([
+        'password' => Hash::make($request->new_password)
+    ]);
+
+    return response()->json([
+        'message' => 'Password berhasil diubah'
+    ]);
+}
+
 
 }

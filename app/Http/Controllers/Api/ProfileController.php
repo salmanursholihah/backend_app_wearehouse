@@ -28,6 +28,7 @@ public function updateProfile(Request $request)
     }
 
     $user->update($validatedData);
+    $user->save();
 
     return response()->json($user);
 

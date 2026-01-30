@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\SuperAdmin\RoleApprovalController;
+use App\Http\Controllers\Api\ProfileController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,9 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chat', [ChatController::class, 'send']);
     Route::get('/chat/{room}', [ChatController::class, 'history']);
     Route::post('/request-admin', [App\Http\Controllers\Api\User\RoleRequestController::class, 'requestAdmin']);
-    Route::get('/profile', [App\Http\Controllers\Api\ProfileController::class, 'profile']);
-    Route::put('/profile', [App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);
-    Route::post('/change-password', [App\Http\Controllers\Api\ChangePasswordController::class, 'update']);
+    Route::get('/profile', [ProfileController::class, 'profile']);
+    Route::put('/profile', [ProfileController::class, 'updateProfile']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
     /*
     |--------------------------------------------------------------------------
     | ADMIN & SUPER ADMIN

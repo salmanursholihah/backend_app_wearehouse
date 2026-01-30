@@ -14,6 +14,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'image',
         'password',
         'role',
     ];
@@ -51,5 +52,11 @@ class User extends Authenticatable
 
     public function ChatRoom(){
         return $this->belongsTo(ChatRoom::class);
+    }
+
+    public function getImageUrlAttribute(){
+        return $this->image
+        ? asset('storage/' . $this->image)
+        : null;
     }
 }

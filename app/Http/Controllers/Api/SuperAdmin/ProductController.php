@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
@@ -35,7 +35,8 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'stock' => 'integer|min:0',
             'unit' => 'nullable|string',
-            'images.*' => 'image|mimes:jpg,jpeg,png'
+            'images.*' => 'image|mimes:jpg,jpeg,png',
+            'status' => 'pending'
         ]);
 
         $product = Product::create([
@@ -61,7 +62,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Product created',
+            'message' => 'product submit to approval',
             'data' => $product->load('images')
         ], 201);
     }
@@ -137,4 +138,37 @@ class ProductController extends Controller
             abort(403, 'Unauthorized');
         }
     }
+
+
+    ///APPROVE
+    public function approve($id)
+    {
+        $this->checkSuperAdmin();
+        $product = Product::findOrFail($id);
+
+        $product->update([
+            'status'=> 'approved',
+            'approved_by' => auth::id()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'product approved'
+        ]);
+    }
+
+public function reject($id)
+{
+    $this->checkSuperAdmin();
+
+    $product = Product::findOrFail($id);
+    $product->update([
+        'status' => 'rejected'
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Product rejected'
+    ]);
+}
 }

@@ -19,6 +19,12 @@ public function requests()
     public function images(){
         return $this->hasMany(ProductImage::class);
     }
+    public function creator(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function approver(){
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 }
 
 

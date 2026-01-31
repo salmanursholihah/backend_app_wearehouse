@@ -141,4 +141,28 @@ class ProductWebController extends Controller
     {
         abort_if(!in_array(auth()->user()->role,['admin','super_admin']),403);
     }
+
+    public function approve(Product $product)
+    {
+        $this->adminOnly();
+
+        $product->update([
+            'status' => 'approved',
+            'approved_by' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Produk disetujui');
+    }
+
+    public function reject(Product $product)
+    {
+        $this->adminOnly();
+
+        $product->update([
+            'status' => 'rejected',
+            'approved_by' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Produk ditolak');
+    }
 }

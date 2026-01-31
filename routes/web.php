@@ -65,6 +65,10 @@ Route::middleware('auth')->group(function () {
     | PRODUCTS
     */
     Route::resource('product', ProductWebController::class);
+    Route::post('/product/{product}/approve', [ProductWebController::class, 'approve'])
+        ->name('product.approve');
+    Route::post('/product/{product}/reject', [ProductWebController::class, 'reject'])
+        ->name('product.reject');
 
     /*
     | REQUEST BARANG

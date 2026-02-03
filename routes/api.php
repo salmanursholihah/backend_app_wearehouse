@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\SuperAdmin\ProductApprovalController;
 use App\Http\Controllers\Api\User\ProductUserController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | AUTH
@@ -50,6 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'updateProfile']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
     Route::get('/inventory', [ProductUserController::class, 'index']);
+    Route::post('/product-requests', [ProductRequestController::class,'store']);
+    Route::get('/my-product-requests', [ProductRequestController::class,'myRequests']);
 
     /*
     |--------------------------------------------------------------------------
@@ -90,5 +93,13 @@ Route::middleware('auth:sanctum')->group(function () {
         //SUPER_ADMIN APPROVE/ REJECT PRODUCT
  Route::get('/super/products/pending', [ProductApprovalController::class, 'pending']);
         Route::post('/super/products/{id}/approve', [ProductApprovalController::class, 'approve']);
-        Route::post('/super/products/{id}/reject', [ProductApprovalController::class, 'reject']);    });
+        Route::post('/super/products/{id}/reject', [ProductApprovalController::class, 'reject']);    
+        Route::get('/product-requests', [ProductRequestApprovalController::class,'index']);
+        Route::post('/product-requests/{id}/approve', [ProductRequestApprovalController::class,'approve']);
+        Route::post('/product-requests/{id}/reject', [ProductRequestApprovalController::class,'reject']);
+
+        });
 });
+
+
+

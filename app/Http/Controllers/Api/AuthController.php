@@ -1,147 +1,152 @@
 <?php
 
-// namespace App\Http\Controllers\Api;
-
-// use App\Http\Controllers\Controller;
-// use App\Models\User;
-// use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Hash;
-
-// class AuthController extends Controller
-// {
-// public function login(Request $request)
-//     {
-//         $request->validate([
-//             'email' => 'required|email',
-//             'password' => 'required'
-//         ]);
-
-//         $user = User::where('email', $request->email)->first();
-
-//         if (!$user) {
-//             return response()->json([
-//                 'message' => 'User tidak ditemukan'
-//             ], 401);
-//         }
-
-//         if (!Hash::check($request->password, $user->password)) {
-//             return response()->json([
-//                 'message' => 'Password salah'
-//             ], 401);
-//         }
-
-//         // WAJIB karena sudah pakai HasApiTokens
-//         $token = $user->createToken('auth_token')->plainTextToken;
-
-//         return response()->json([
-//             'message' => 'Login berhasil',
-//             'token' => $token,
-//             'user' => [
-//                 'id' => $user->id,
-//                 'name' => $user->name,
-//                 'email' => $user->email,
-//                 'role' => $user->role
-//             ]
-//         ]);
-//     }
-
-//     public function register(Request $request)
-// {
-//     $request->validate([
-//         'name' => 'required',
-//         'email' => 'required|email|unique:users',
-//         'password' => 'required|min:6',
-//         'role' => 'in:user,admin,super_admin'
-//     ]);
-
-//     $user = User::create([
-//         'name' => $request->name,
-//         'email' => $request->email,
-//         'password' => bcrypt($request->password),
-//         'role' => $request->role ?? 'user'
-//     ]);
-
-//     return response()->json([
-//         'message' => 'register success',
-//         'user' => $user
-//     ]);
-// }
-
-// }
-
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+    // kode 2
+    /*
+    |--------------------------------------------------------------------------
+    | REGISTER
+    |--------------------------------------------------------------------------
+    */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6'
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user'
+            'role' => 'user',
+            'is_active' => true
         ]);
 
+        // Simpan activity log
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'register',
+            'description' => 'User registered'
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
+            'success' => true,
             'message' => 'Register berhasil',
-            'user' => $user
+            'data' => [
+                'user' => $user,
+                'token' => $token
+            ]
         ], 201);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | LOGIN
+    |--------------------------------------------------------------------------
+    */
     public function login(Request $request)
     {
-        if (!Auth::attempt($request->only('email','password'))) {
-            return response()->json(['message' => 'Login gagal'], 401);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $user = Auth::user();
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah'
+            ], 401);
+        }
+
+        if (!$user->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun tidak aktif'
+            ], 403);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'login',
+            'description' => 'User login'
+        ]);
 
         return response()->json([
-            'token' => $user->createToken('mobile')->plainTextToken,
-            'user' => $user
+            'success' => true,
+            'message' => 'Login berhasil',
+            'data' => [
+                'user' => $user,
+                'token' => $token
+            ]
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | LOGOUT
+    |--------------------------------------------------------------------------
+    */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logout berhasil']);
-    }
-    public function changePassword(Request $request)
-{
-    $request->validate([
-        'current_password' => 'required',
-        'new_password' => 'required|min:6|confirmed',
-    ]);
+        ActivityLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'logout',
+            'description' => 'User logout'
+        ]);
 
-    $user = $request->user();
-
-    if (!Hash::check($request->current_password, $user->password)) {
         return response()->json([
-            'message' => 'Password lama salah'
-        ], 422);
+            'success' => true,
+            'message' => 'Logout berhasil'
+        ]);
     }
 
-    $user->update([
-        'password' => Hash::make($request->new_password)
-    ]);
-
-    return response()->json([
-        'message' => 'Password berhasil diubah'
-    ]);
-}
+    /*
+    |--------------------------------------------------------------------------
+    | ME (PROFILE LOGIN)
+    |--------------------------------------------------------------------------
+    */
+    public function me(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $request->user()
+        ]);
+    }
 }

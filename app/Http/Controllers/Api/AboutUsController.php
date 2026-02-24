@@ -7,12 +7,22 @@ use App\Models\AboutUs;
 
 class AboutUsController extends Controller
 {
-    public function index()
+//     public function index()
+//     {
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'About us fetched successfully',
+//             'data' => AboutUs::first(),
+//         ]);
+//     }
+
+ public function index()
     {
+        $about = AboutUs::latest()->first();
+
         return response()->json([
             'success' => true,
-            'message' => 'About us fetched successfully',
-            'data' => AboutUs::first(),
+            'data' => $about
         ]);
     }
 }

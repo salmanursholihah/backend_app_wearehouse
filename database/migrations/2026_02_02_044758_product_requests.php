@@ -12,22 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_requests', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
-    $table->integer('qty');
-    $table->enum('purpose', ['maintenance','distributor']);
+            $table->integer('qty');
+            $table->enum('purpose', ['maintenance', 'distributor']);
 
-    $table->enum('status', ['pending','approved','rejected'])
-          ->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected'])
+                ->default('pending');
 
-    $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->string('file_path')->nullable();
 
-    $table->timestamps();
-});
-
+            $table->timestamps();
+        });
     }
 
     /**

@@ -58,8 +58,8 @@
                 </a>
             </li>
 
-            <li class="{{ request()->routeIs('pages.chat.index') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('pages.chat.index') }}">
+            <li class="{{ request()->routeIs('chat.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('chat.index') }}">
                     <i class="fas fa-comments"></i> <span>Chat</span>
                 </a>
             </li>
@@ -67,7 +67,7 @@
             {{-- LOGOUT --}}
             <li class="mt-4">
                 <a class="nav-link text-danger" href="#"
-                   onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                    onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
                 </a>
             </li>

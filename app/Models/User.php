@@ -11,13 +11,17 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'image',
-        'password',
-        'role',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'image',
+    //     'password',
+    //     'role',
+    // ];
+
+
+    // guarded
+
 
     protected $hidden = [
         'password',
@@ -27,6 +31,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_active' => 'boolean'
     ];
 
     // OPTIONAL – biar gampang cek role
@@ -45,18 +50,20 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
-    public function ActifityLogs()
+    public function activityLogs()
     {
         return $this->hasMany(ActivityLog::class);
     }
 
-    public function ChatRoom(){
+    public function ChatRoom()
+    {
         return $this->belongsTo(ChatRoom::class);
     }
 
-    public function getImageUrlAttribute(){
+    public function getImageUrlAttribute()
+    {
         return $this->image
-        ? asset('storage/' . $this->image)
-        : null;
+            ? asset('storage/' . $this->image)
+            : null;
     }
 }

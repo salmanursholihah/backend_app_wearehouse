@@ -85,7 +85,10 @@ class ProductController extends Controller
         ]);
 
         $product->update($request->only([
-            'name', 'description', 'stock', 'unit'
+            'name',
+            'description',
+            'stock',
+            'unit'
         ]));
 
         // ✅ TAMBAH IMAGE BARU (TANPA HAPUS YANG LAMA)
@@ -140,35 +143,35 @@ class ProductController extends Controller
     }
 
 
-    ///APPROVE
-    public function approve($id)
-    {
-        $this->checkSuperAdmin();
-        $product = Product::findOrFail($id);
+    //     ///APPROVE
+    //     public function approve($id)
+    //     {
+    //         $this->checkSuperAdmin();
+    //         $product = Product::findOrFail($id);
 
-        $product->update([
-            'status'=> 'approved',
-            'approved_by' => auth::id()
-        ]);
+    //         $product->update([
+    //             'status'=> 'approved',
+    //             'approved_by' => auth::id()
+    //         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'product approved'
-        ]);
-    }
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'product approved'
+    //         ]);
+    //     }
 
-public function reject($id)
-{
-    $this->checkSuperAdmin();
+    // public function reject($id)
+    // {
+    //     $this->checkSuperAdmin();
 
-    $product = Product::findOrFail($id);
-    $product->update([
-        'status' => 'rejected'
-    ]);
+    //     $product = Product::findOrFail($id);
+    //     $product->update([
+    //         'status' => 'rejected'
+    //     ]);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Product rejected'
-    ]);
-}
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Product rejected'
+    //     ]);
+    // }
 }

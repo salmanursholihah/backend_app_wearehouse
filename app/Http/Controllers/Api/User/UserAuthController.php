@@ -15,6 +15,56 @@ class UserAuthController extends Controller
      * POST /api/auth/user/login
      * body: { "email": "...", "password": "..." }
      */
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name'     => ['required', 'string', 'max:100'],
+            'email'    => ['required', 'email', 'max:150', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6'],
+            'phone'    => ['nullable', 'string', 'max:30'],
+            'address'  => ['nullable', 'string'],
+            'image'    => ['nullable', 'string', 'max:255'], // simpan path/URL (kalau upload nanti kita buat endpoint sendiri)
+        ]);
+
+        $user = User::create([
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'password'  => Hash::make($data['password']),
+            'role'      => 'user',
+            'phone'     => $data['phone'] ?? null,
+            'address'   => $data['address'] ?? null,
+            'image'     => $data['image'] ?? null,
+            'is_active' => true,
+        ]);
+
+        // Optional: pastikan token lama ga ada (harusnya belum ada)
+        $user->tokens()->delete();
+
+        // Token khusus user app
+        $token = $user->createToken('user-token', ['user'])->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Register user berhasil.',
+            'data' => [
+                'token' => $token,
+                'user'  => [
+                    'id'        => $user->id,
+                    'name'      => $user->name,
+                    'email'     => $user->email,
+                    'role'      => $user->role,
+                    'phone'     => $user->phone,
+                    'address'   => $user->address,
+                    'image'     => $user->image,
+                    'is_active' => (bool) $user->is_active,
+                    'created_at'=> $user->created_at,
+                ],
+            ],
+        ], 201);
+    }
+
+    
     public function login(Request $request)
     {
         $data = $request->validate([

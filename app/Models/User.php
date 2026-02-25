@@ -22,6 +22,8 @@ class User extends Authenticatable
 
     // guarded
 
+    protected $guarded = [];
+
 
     protected $hidden = [
         'password',

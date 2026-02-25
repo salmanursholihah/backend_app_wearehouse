@@ -126,13 +126,11 @@
 
 ///code 2//
 
-use Illuminate\Support\Facades\Route;
-
-// AUTH
-use App\Http\Controllers\Api\User\UserAuthController;
-use App\Http\Controllers\Api\Auth\AdminAuthController;
-
 use App\Http\Controllers\Api\Admin\AdminAboutController;
+use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\User\UserAuthController;
+use App\Http\Controllers\Api\User\UserProfileController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,7 +138,7 @@ use App\Http\Controllers\Api\Admin\AdminAboutController;
 |--------------------------------------------------------------------------
 */
 Route::prefix('auth/user')->group(function () {
-    // Route::post('/register', [UserAuthController::class, 'register']);
+    Route::post('/register', [UserAuthController::class, 'register']);
     Route::post('/login', [UserAuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -186,9 +184,9 @@ Route::prefix('user')
     ->group(function () {
 
     // USERS table (profil user sendiri)
-    // Route::get('/profile', [UserProfileController::class, 'show']);
-    // Route::put('/profile', [UserProfileController::class, 'update']);
-    // Route::post('/profile/image', [UserProfileController::class, 'updateImage']); // kalau pakai upload
+    Route::get('/profile', [UserProfileController::class, 'show']);
+    Route::put('/profile', [UserProfileController::class, 'update']);
+    Route::post('/profile/image', [UserProfileController::class, 'updateImage']); // kalau pakai upload
 
     // // PRODUCTS + PRODUCT_IMAGES (user hanya lihat yang approved)
     // Route::get('/products', [UserProductController::class, 'index']);          // list produk approved

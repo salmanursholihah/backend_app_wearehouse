@@ -32,4 +32,13 @@ class Product extends Model
     {
         return $this->hasMany(ProductRequest::class);
     }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+    public function requestItems()
+{
+    return $this->hasMany(\App\Models\RequestItem::class, 'product_id');
+}
 }

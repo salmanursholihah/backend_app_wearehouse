@@ -125,11 +125,16 @@
 
 
 ///code 2//
-
-use App\Http\Controllers\Api\Admin\AdminAboutController;
-use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\Admin\AdminActivityLogController;
+use App\Http\Controllers\Api\Admin\AdminAuthController;
+use App\Http\Controllers\Api\Admin\AdminUserController;
+use App\Http\Controllers\Api\User\ChatController;
 use App\Http\Controllers\Api\User\UserAuthController;
+use App\Http\Controllers\Api\User\UserProductController;
+use App\Http\Controllers\Api\User\UserProductRequestController;
 use App\Http\Controllers\Api\User\UserProfileController;
+use App\Http\Controllers\Api\User\UserRequestController;
+use App\Http\Controllers\Api\User\UserRoleRequestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -137,6 +142,7 @@ use Illuminate\Support\Facades\Route;
 | AUTH - USER
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('auth/user')->group(function () {
     Route::post('/register', [UserAuthController::class, 'register']);
     Route::post('/login', [UserAuthController::class, 'login']);
@@ -152,6 +158,19 @@ Route::prefix('auth/user')->group(function () {
 | AUTH - ADMIN
 |--------------------------------------------------------------------------
 */
+// Route::prefix('auth/admin')->group(function () {
+//     Route::post('/admin_login', [AdminAuthController::class, 'admin_login']);
+
+//     Route::middleware('auth:sanctum')->group(function () {
+//         Route::get('/me', [AdminAuthController::class, 'me']);
+//         Route::post('/logout', [AdminAuthController::class, 'logout']);
+
+//         // bikin admin baru hanya super_admin
+//         Route::post('/register', [AdminAuthController::class, 'register'])
+//             ->middleware('role:super_admin');
+//     });
+// });
+
 Route::prefix('auth/admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
@@ -171,7 +190,7 @@ Route::prefix('auth/admin')->group(function () {
 | PUBLIC (tanpa login) - dari about_us (opsional)
 |--------------------------------------------------------------------------
 */
-Route::get('/about', [AdminAboutController::class, 'publicIndex']); // user/admin bisa baca tanpa login (opsional)
+// Route::get('/about', [AdminAboutController::class, 'publicIndex']); // user/admin bisa baca tanpa login (opsional)
 
 
 /*
@@ -183,128 +202,220 @@ Route::prefix('user')
     ->middleware(['auth:sanctum', 'role:user'])
     ->group(function () {
 
-    // USERS table (profil user sendiri)
-    Route::get('/profile', [UserProfileController::class, 'show']);
-    Route::put('/profile', [UserProfileController::class, 'update']);
-    Route::post('/profile/image', [UserProfileController::class, 'updateImage']); // kalau pakai upload
+        // USERS table (profil user sendiri)
+        Route::get('/profile', [UserProfileController::class, 'show']);
+        Route::put('/profile', [UserProfileController::class, 'update']);
+        Route::post('/profile/image', [UserProfileController::class, 'updateImage']); // kalau pakai upload
 
-    // // PRODUCTS + PRODUCT_IMAGES (user hanya lihat yang approved)
-    // Route::get('/products', [UserProductController::class, 'index']);          // list produk approved
-    // Route::get('/products/{id}', [UserProductController::class, 'show']);      // detail
-    // Route::get('/products/{id}/images', [UserProductController::class, 'images']);
+        // // PRODUCTS + PRODUCT_IMAGES (user hanya lihat yang approved)
+        Route::get('/products', [UserProductController::class, 'index']);          // list produk approved
+        Route::get('/products/{id}', [UserProductController::class, 'show']);      // detail
+        Route::get('/products/{id}/images', [UserProductController::class, 'images']);
 
-    // // REQUESTS + REQUEST_ITEMS (user membuat permintaan barang)
-    // Route::post('/requests', [UserRequestController::class, 'store']);         // create request + items
-    // Route::get('/requests', [UserRequestController::class, 'index']);          // list request milik user
-    // Route::get('/requests/{id}', [UserRequestController::class, 'show']);      // detail + items
-    // Route::put('/requests/{id}/cancel', [UserRequestController::class, 'cancel']); // batalkan (jika masih pending)
-    // Route::put('/requests/{id}/confirm-taken', [UserRequestController::class, 'confirmTaken']); // status -> taken (opsional, tergantung flow kamu)
+        // // REQUESTS + REQUEST_ITEMS (user membuat permintaan barang)
+        Route::post('/requests', [UserRequestController::class, 'store']);         // create request + items
+        Route::get('/requests', [UserRequestController::class, 'index']);          // list request milik user
+        Route::get('/requests/{id}', [UserRequestController::class, 'show']);      // detail + items
+        Route::put('/requests/{id}/cancel', [UserRequestController::class, 'cancel']); // batalkan (jika masih pending)
+        Route::put('/requests/{id}/confirm-taken', [UserRequestController::class, 'confirmTaken']); // status -> taken (opsional, tergantung flow kamu)
 
-    // // PRODUCT_REQUESTS (user request barang untuk maintenance/distributor)
-    // Route::post('/product-requests', [UserProductRequestController::class, 'store']); // create + upload file_path
-    // Route::get('/product-requests', [UserProductRequestController::class, 'index']);
-    // Route::get('/product-requests/{id}', [UserProductRequestController::class, 'show']);
-    // Route::put('/product-requests/{id}/cancel', [UserProductRequestController::class, 'cancel']); // kalau masih pending
+        // // PRODUCT_REQUESTS (user request barang untuk maintenance/distributor)
+        Route::post('/product-requests', [UserProductRequestController::class, 'store']); // create + upload file_path
+        Route::get('/product-requests', [UserProductRequestController::class, 'index']);
+        Route::get('/product-requests/{id}', [UserProductRequestController::class, 'show']);
+        Route::put('/product-requests/{id}/cancel', [UserProductRequestController::class, 'cancel']); // kalau masih pending
 
-    // // ROLE_REQUESTS (user minta jadi admin)
-    // Route::post('/role-requests', [UserRoleRequestController::class, 'store']); // request role admin
-    // Route::get('/role-requests', [UserRoleRequestController::class, 'index']);  // history milik user
-    // Route::get('/role-requests/{id}', [UserRoleRequestController::class, 'show']);
+        // // ROLE_REQUESTS (user minta jadi admin)
+        Route::post('/role-requests', [UserRoleRequestController::class, 'store']); // request role admin
+        Route::get('/role-requests', [UserRoleRequestController::class, 'index']);  // history  milik user
+        Route::get('/role-requests/{id}', [UserRoleRequestController::class, 'show']);
 
-    // // CHAT (chat_rooms, chat_participants, chat_messages) - dipakai user
-    // Route::get('/chat/rooms', [ChatController::class, 'rooms']);
-    // Route::post('/chat/rooms', [ChatController::class, 'createRoom']);                 // personal/group
-    // Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'messages']);
-    // Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
-    // Route::post('/chat/rooms/{roomId}/participants', [ChatController::class, 'addParticipant']); // group only
-    // Route::delete('/chat/rooms/{roomId}/participants/{userId}', [ChatController::class, 'removeParticipant']);
+        // // CHAT (chat_rooms, chat_participants, chat_messages) - dipakai user
+        Route::get('/chat/rooms', [ChatController::class, 'rooms']);
+        Route::post('/chat/rooms', [ChatController::class, 'createRoom']);                 // personal/group
+        Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'messages']);
+        Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
+        Route::post('/chat/rooms/{roomId}/participants', [ChatController::class, 'addParticipant']); // group only
+        Route::delete('/chat/rooms/{roomId}/participants/{userId}', [ChatController::class, 'removeParticipant']);
 
-    // // ACTIVITY LOGS (opsional: user lihat log sendiri)
-    // Route::get('/activity-logs', [AdminActivityLogController::class, 'myLogs']); // atau bikin UserActivityLogController
-});
+        // // ACTIVITY LOGS (opsional: user lihat log sendiri)
+        Route::get('/activity-logs', [AdminActivityLogController::class, 'myLogs']); // atau bikin UserActivityLogController
+    });
+
 
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN APP (Warehouse Admin)
+| ADMIN APP (Warehouse Admin) - role:admin
 |--------------------------------------------------------------------------
 */
+Route::prefix('admin')
+    ->middleware(['auth:sanctum', 'role:admin'])
+    ->group(function () {
+
+        // users (admin bisa view/update basic, tapi TIDAK bisa set-role)
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::get('/users/{id}', [AdminUserController::class, 'show']);
+        Route::put('/users/{id}', [AdminUserController::class, 'update']);
+        Route::put('/users/{id}/activate', [AdminUserController::class, 'activate']);
+        Route::put('/users/{id}/deactivate', [AdminUserController::class, 'deactivate']);
+
+        // // products
+        // Route::get('/products', [AdminProductController::class, 'index']);
+        // Route::post('/products', [AdminProductController::class, 'store']);
+        // Route::get('/products/{id}', [AdminProductController::class, 'show']);
+        // Route::put('/products/{id}', [AdminProductController::class, 'update']);
+        // Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
+
+        // // approval product (admin boleh approve/reject atau mau dibatasi super-admin? terserah)
+        // Route::put('/products/{id}/approve', [AdminProductController::class, 'approve']);
+        // Route::put('/products/{id}/reject', [AdminProductController::class, 'reject']);
+
+        // // product images
+        // Route::get('/products/{id}/images', [AdminProductController::class, 'images']);
+        // Route::post('/products/{id}/images', [AdminProductController::class, 'addImage']);
+        // Route::delete('/product-images/{imageId}', [AdminProductController::class, 'deleteImage']);
+
+        // // requests
+        // Route::get('/requests', [AdminRequestController::class, 'index']);
+        // Route::get('/requests/{id}', [AdminRequestController::class, 'show']);
+        // Route::put('/requests/{id}/approve', [AdminRequestController::class, 'approve']);
+        // Route::put('/requests/{id}/reject', [AdminRequestController::class, 'reject']);
+        // Route::put('/requests/{id}/taken', [AdminRequestController::class, 'markTaken']);
+
+        // // stock logs
+        // Route::get('/stock-logs', [AdminStockController::class, 'logs']);
+        // Route::get('/stock-logs/{id}', [AdminStockController::class, 'show']);
+        // Route::post('/stock/in', [AdminStockController::class, 'stockIn']);
+        // Route::post('/stock/out', [AdminStockController::class, 'stockOut']);
+
+        // // product requests approve/reject
+        // Route::get('/product-requests', [AdminProductRequestController::class, 'index']);
+        // Route::get('/product-requests/{id}', [AdminProductRequestController::class, 'show']);
+        // Route::put('/product-requests/{id}/approve', [AdminProductRequestController::class, 'approve']);
+        // Route::put('/product-requests/{id}/reject', [AdminProductRequestController::class, 'reject']);
+
+        // // about us
+        // Route::get('/about', [AdminAboutController::class, 'index']);
+        // Route::post('/about', [AdminAboutController::class, 'store']);
+        // Route::get('/about/{id}', [AdminAboutController::class, 'show']);
+        // Route::put('/about/{id}', [AdminAboutController::class, 'update']);
+        // Route::delete('/about/{id}', [AdminAboutController::class, 'destroy']);
+
+        // // chat
+        // Route::get('/chat/rooms', [ChatController::class, 'rooms']);
+        // Route::post('/chat/rooms', [ChatController::class, 'createRoom']);
+        // Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'messages']);
+        // Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
+        // Route::post('/chat/rooms/{roomId}/participants', [ChatController::class, 'addParticipant']);
+        // Route::delete('/chat/rooms/{roomId}/participants/{userId}', [ChatController::class, 'removeParticipant']);
+
+        // // activity logs all
+        // Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);
+        // Route::get('/activity-logs/{id}', [AdminActivityLogController::class, 'show']);
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| SUPER ADMIN APP - role:super_admin
+|--------------------------------------------------------------------------
+*/
+// Route::prefix('super-admin')
+//     ->middleware(['auth:sanctum', 'role:super_admin'])
+//     ->group(function () {
+
+//     // super admin: set role user
+//     Route::put('/users/{id}/set-role', [SuperAdminUserController::class, 'setRole']);
+
+//     // super admin: approve/reject role request
+//     Route::get('/role-requests', [SuperAdminRoleRequestController::class, 'index']);
+//     Route::get('/role-requests/{id}', [SuperAdminRoleRequestController::class, 'show']);
+//     Route::put('/role-requests/{id}/approve', [SuperAdminRoleRequestController::class, 'approve']);
+//     Route::put('/role-requests/{id}/reject', [SuperAdminRoleRequestController::class, 'reject']);
+// });
+
+// /*
+// |--------------------------------------------------------------------------
+// | ADMIN APP (Warehouse Admin)
+// |--------------------------------------------------------------------------
+// */
 // Route::prefix('admin')
 //     ->middleware(['auth:sanctum', 'role:admin,super_admin'])
 //     ->group(function () {
 
-    // USERS table (manajemen user)
-    // Route::get('/users', [AdminUserController::class, 'index']);
-    // Route::get('/users/{id}', [AdminUserController::class, 'show']);
-    // Route::put('/users/{id}', [AdminUserController::class, 'update']);                 // update name/phone/address/is_active/image
-    // Route::put('/users/{id}/activate', [AdminUserController::class, 'activate']);
-    // Route::put('/users/{id}/deactivate', [AdminUserController::class, 'deactivate']);
+//     // USERS table (manajemen user)
+//     // Route::get('/users', [AdminUserController::class, 'index']);
+//     // Route::get('/users/{id}', [AdminUserController::class, 'show']);
+//     // Route::put('/users/{id}', [AdminUserController::class, 'update']);                 // update name/phone/address/is_active/image
+//     // Route::put('/users/{id}/activate', [AdminUserController::class, 'activate']);
+//     // Route::put('/users/{id}/deactivate', [AdminUserController::class, 'deactivate']);
 
-    // set role (super_admin only)
-    // Route::put('/users/{id}/set-role', [AdminUserController::class, 'setRole'])
-    //     ->middleware('role:super_admin');
+//     // set role (super_admin only)
+//     // Route::put('/users/{id}/set-role', [AdminUserController::class, 'setRole'])
+//     //     ->middleware('role:super_admin');
 
-    // PRODUCTS (CRUD)
-    // Route::get('/products', [AdminProductController::class, 'index']);                 // list semua (pending/approved/rejected)
-    // Route::post('/products', [AdminProductController::class, 'store']);                // create product
-    // Route::get('/products/{id}', [AdminProductController::class, 'show']);
-    // Route::put('/products/{id}', [AdminProductController::class, 'update']);
-    // Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
+//     // PRODUCTS (CRUD)
+//     // Route::get('/products', [AdminProductController::class, 'index']);                 // list semua (pending/approved/rejected)
+//     // Route::post('/products', [AdminProductController::class, 'store']);                // create product
+//     // Route::get('/products/{id}', [AdminProductController::class, 'show']);
+//     // Route::put('/products/{id}', [AdminProductController::class, 'update']);
+//     // Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
 
-    // product approval (status + approved_by)
-    // Route::put('/products/{id}/approve', [AdminProductController::class, 'approve']);
-    // Route::put('/products/{id}/reject', [AdminProductController::class, 'reject']);
+//     // product approval (status + approved_by)
+//     // Route::put('/products/{id}/approve', [AdminProductController::class, 'approve']);
+//     // Route::put('/products/{id}/reject', [AdminProductController::class, 'reject']);
 
-    // PRODUCT_IMAGES
-    // Route::get('/products/{id}/images', [AdminProductController::class, 'images']);
-    // Route::post('/products/{id}/images', [AdminProductController::class, 'addImage']);
-    // Route::delete('/product-images/{imageId}', [AdminProductController::class, 'deleteImage']);
+//     // PRODUCT_IMAGES
+//     // Route::get('/products/{id}/images', [AdminProductController::class, 'images']);
+//     // Route::post('/products/{id}/images', [AdminProductController::class, 'addImage']);
+//     // Route::delete('/product-images/{imageId}', [AdminProductController::class, 'deleteImage']);
 
-    // REQUESTS (admin proses request user)
-    // Route::get('/requests', [AdminRequestController::class, 'index']);
-    // Route::get('/requests/{id}', [AdminRequestController::class, 'show']);
-    // Route::put('/requests/{id}/approve', [AdminRequestController::class, 'approve']); // status approved, processed_by
-    // Route::put('/requests/{id}/reject', [AdminRequestController::class, 'reject']);   // status rejected, processed_by
-    // Route::put('/requests/{id}/taken', [AdminRequestController::class, 'markTaken']); // status taken (setelah barang diserahkan)
+//     // REQUESTS (admin proses request user)
+//     // Route::get('/requests', [AdminRequestController::class, 'index']);
+//     // Route::get('/requests/{id}', [AdminRequestController::class, 'show']);
+//     // Route::put('/requests/{id}/approve', [AdminRequestController::class, 'approve']); // status approved, processed_by
+//     // Route::put('/requests/{id}/reject', [AdminRequestController::class, 'reject']);   // status rejected, processed_by
+//     // Route::put('/requests/{id}/taken', [AdminRequestController::class, 'markTaken']); // status taken (setelah barang diserahkan)
 
-    // STOCK_LOGS (dan update stok product)
-    // Route::get('/stock-logs', [AdminStockController::class, 'logs']);                  // list log
-    // Route::get('/stock-logs/{id}', [AdminStockController::class, 'show']);
+//     // STOCK_LOGS (dan update stok product)
+//     // Route::get('/stock-logs', [AdminStockController::class, 'logs']);                  // list log
+//     // Route::get('/stock-logs/{id}', [AdminStockController::class, 'show']);
 
-    // manual stock in/out (buat kasus selain request)
-    // Route::post('/stock/in', [AdminStockController::class, 'stockIn']);                // type=in
-    // Route::post('/stock/out', [AdminStockController::class, 'stockOut']);              // type=out
+//     // manual stock in/out (buat kasus selain request)
+//     // Route::post('/stock/in', [AdminStockController::class, 'stockIn']);                // type=in
+//     // Route::post('/stock/out', [AdminStockController::class, 'stockOut']);              // type=out
 
-    // PRODUCT_REQUESTS (approve/reject permintaan)
-    // Route::get('/product-requests', [AdminProductRequestController::class, 'index']);
-    // Route::get('/product-requests/{id}', [AdminProductRequestController::class, 'show']);
-    // Route::put('/product-requests/{id}/approve', [AdminProductRequestController::class, 'approve']);
-    // Route::put('/product-requests/{id}/reject', [AdminProductRequestController::class, 'reject']);
+//     // PRODUCT_REQUESTS (approve/reject permintaan)
+//     // Route::get('/product-requests', [AdminProductRequestController::class, 'index']);
+//     // Route::get('/product-requests/{id}', [AdminProductRequestController::class, 'show']);
+//     // Route::put('/product-requests/{id}/approve', [AdminProductRequestController::class, 'approve']);
+//     // Route::put('/product-requests/{id}/reject', [AdminProductRequestController::class, 'reject']);
 
-    // ROLE_REQUESTS (approve/reject user minta jadi admin)
-    // Route::get('/role-requests', [AdminRoleRequestController::class, 'index']);
-    // Route::get('/role-requests/{id}', [AdminRoleRequestController::class, 'show']);
-    // Route::put('/role-requests/{id}/approve', [AdminRoleRequestController::class, 'approve'])
-    //     ->middleware('role:super_admin'); // rekomendasi: hanya super_admin boleh approve admin
-    // Route::put('/role-requests/{id}/reject', [AdminRoleRequestController::class, 'reject'])
-    //     ->middleware('role:super_admin');
+//     // ROLE_REQUESTS (approve/reject user minta jadi admin)
+//     // Route::get('/role-requests', [AdminRoleRequestController::class, 'index']);
+//     // Route::get('/role-requests/{id}', [AdminRoleRequestController::class, 'show']);
+//     // Route::put('/role-requests/{id}/approve', [AdminRoleRequestController::class, 'approve'])
+//     //     ->middleware('role:super_admin'); // rekomendasi: hanya super_admin boleh approve admin
+//     // Route::put('/role-requests/{id}/reject', [AdminRoleRequestController::class, 'reject'])
+//     //     ->middleware('role:super_admin');
 
-    // ABOUT_US (CMS)
-    // Route::get('/about', [AdminAboutController::class, 'index']);
-    // Route::post('/about', [AdminAboutController::class, 'store']);
-    // Route::get('/about/{id}', [AdminAboutController::class, 'show']);
-    // Route::put('/about/{id}', [AdminAboutController::class, 'update']);
-    // Route::delete('/about/{id}', [AdminAboutController::class, 'destroy']);
+//     // ABOUT_US (CMS)
+//     // Route::get('/about', [AdminAboutController::class, 'index']);
+//     // Route::post('/about', [AdminAboutController::class, 'store']);
+//     // Route::get('/about/{id}', [AdminAboutController::class, 'show']);
+//     // Route::put('/about/{id}', [AdminAboutController::class, 'update']);
+//     // Route::delete('/about/{id}', [AdminAboutController::class, 'destroy']);
 
-    // CHAT (admin juga butuh)
-    // Route::get('/chat/rooms', [ChatController::class, 'rooms']);
-    // Route::post('/chat/rooms', [ChatController::class, 'createRoom']);
-    // Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'messages']);
-    // Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
-    // Route::post('/chat/rooms/{roomId}/participants', [ChatController::class, 'addParticipant']);
-    // Route::delete('/chat/rooms/{roomId}/participants/{userId}', [ChatController::class, 'removeParticipant']);
+//     // CHAT (admin juga butuh)
+//     // Route::get('/chat/rooms', [ChatController::class, 'rooms']);
+//     // Route::post('/chat/rooms', [ChatController::class, 'createRoom']);
+//     // Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'messages']);
+//     // Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
+//     // Route::post('/chat/rooms/{roomId}/participants', [ChatController::class, 'addParticipant']);
+//     // Route::delete('/chat/rooms/{roomId}/participants/{userId}', [ChatController::class, 'removeParticipant']);
 
-    // ACTIVITY_LOGS (admin lihat semua)
-    // Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);
-    // Route::get('/activity-logs/{id}', [AdminActivityLogController::class, 'show']);
+//     // ACTIVITY_LOGS (admin lihat semua)
+//     // Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);
+//     // Route::get('/activity-logs/{id}', [AdminActivityLogController::class, 'show']);
 // });

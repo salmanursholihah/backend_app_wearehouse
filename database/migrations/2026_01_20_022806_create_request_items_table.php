@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('request_items', function (Blueprint $table) {
-    $table->id();
+        Schema::create('request_items', function (Blueprint $table) {
+            $table->id();
 
-    $table->foreignId('request_id')
-        ->constrained()
-        ->cascadeOnDelete();
+            $table->foreignId('request_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->foreignId('product_id')
-        ->constrained()
-        ->cascadeOnDelete();
+            $table->foreignId('product_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->integer('qty');
+            $table->integer('quantity');
 
-    $table->timestamps();
-});
-
+            $table->timestamps();
+        });
     }
 
     /**

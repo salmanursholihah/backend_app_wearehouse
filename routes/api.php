@@ -125,8 +125,13 @@
 
 
 ///code 2//
+use App\Http\Controllers\Api\Admin\AdminAboutController;
 use App\Http\Controllers\Api\Admin\AdminActivityLogController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
+use App\Http\Controllers\Api\Admin\AdminProductController;
+use App\Http\Controllers\Api\Admin\AdminProductRequestController;
+use App\Http\Controllers\Api\Admin\AdminRequestController;
+use App\Http\Controllers\Api\Admin\AdminStockController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\User\ChatController;
 use App\Http\Controllers\Api\User\UserAuthController;
@@ -261,46 +266,46 @@ Route::prefix('admin')
         Route::put('/users/{id}/deactivate', [AdminUserController::class, 'deactivate']);
 
         // // products
-        // Route::get('/products', [AdminProductController::class, 'index']);
-        // Route::post('/products', [AdminProductController::class, 'store']);
-        // Route::get('/products/{id}', [AdminProductController::class, 'show']);
-        // Route::put('/products/{id}', [AdminProductController::class, 'update']);
-        // Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
+        Route::get('/products', [AdminProductController::class, 'index']);
+        Route::post('/products', [AdminProductController::class, 'store']);
+        Route::get('/products/{id}', [AdminProductController::class, 'show']);
+        Route::put('/products/{id}', [AdminProductController::class, 'update']);
+        Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
 
-        // // approval product (admin boleh approve/reject atau mau dibatasi super-admin? terserah)
-        // Route::put('/products/{id}/approve', [AdminProductController::class, 'approve']);
-        // Route::put('/products/{id}/reject', [AdminProductController::class, 'reject']);
+        // approval product (admin boleh approve/reject atau mau dibatasi super-admin? terserah)
+        Route::put('/products/{id}/approve', [AdminProductController::class, 'approve']);
+        Route::put('/products/{id}/reject', [AdminProductController::class, 'reject']);
 
-        // // product images
-        // Route::get('/products/{id}/images', [AdminProductController::class, 'images']);
-        // Route::post('/products/{id}/images', [AdminProductController::class, 'addImage']);
-        // Route::delete('/product-images/{imageId}', [AdminProductController::class, 'deleteImage']);
+        // product images
+        Route::get('/products/{id}/images', [AdminProductController::class, 'images']);
+        Route::post('/products/{id}/images', [AdminProductController::class, 'addImage']);
+        Route::delete('/product-images/{imageId}', [AdminProductController::class, 'deleteImage']);
 
-        // // requests
-        // Route::get('/requests', [AdminRequestController::class, 'index']);
-        // Route::get('/requests/{id}', [AdminRequestController::class, 'show']);
-        // Route::put('/requests/{id}/approve', [AdminRequestController::class, 'approve']);
-        // Route::put('/requests/{id}/reject', [AdminRequestController::class, 'reject']);
-        // Route::put('/requests/{id}/taken', [AdminRequestController::class, 'markTaken']);
+        // requests
+        Route::get('/requests', [AdminRequestController::class, 'index']);
+        Route::get('/requests/{id}', [AdminRequestController::class, 'show']);
+        Route::put('/requests/{id}/approve', [AdminRequestController::class, 'approve']);
+        Route::put('/requests/{id}/reject', [AdminRequestController::class, 'reject']);
+        Route::put('/requests/{id}/taken', [AdminRequestController::class, 'markTaken']);
 
-        // // stock logs
-        // Route::get('/stock-logs', [AdminStockController::class, 'logs']);
-        // Route::get('/stock-logs/{id}', [AdminStockController::class, 'show']);
-        // Route::post('/stock/in', [AdminStockController::class, 'stockIn']);
-        // Route::post('/stock/out', [AdminStockController::class, 'stockOut']);
+        // stock logs
+        Route::get('/stock-logs', [AdminStockController::class, 'logs']);
+        Route::get('/stock-logs/{id}', [AdminStockController::class, 'show']);
+        Route::post('/stock/in', [AdminStockController::class, 'stockIn']);
+        Route::post('/stock/out', [AdminStockController::class, 'stockOut']);
 
-        // // product requests approve/reject
-        // Route::get('/product-requests', [AdminProductRequestController::class, 'index']);
-        // Route::get('/product-requests/{id}', [AdminProductRequestController::class, 'show']);
-        // Route::put('/product-requests/{id}/approve', [AdminProductRequestController::class, 'approve']);
-        // Route::put('/product-requests/{id}/reject', [AdminProductRequestController::class, 'reject']);
+        // product requests approve/reject
+        Route::get('/product-requests', [AdminProductRequestController::class, 'index']);
+        Route::get('/product-requests/{id}', [AdminProductRequestController::class, 'show']);
+        Route::put('/product-requests/{id}/approve', [AdminProductRequestController::class, 'approve']);
+        Route::put('/product-requests/{id}/reject', [AdminProductRequestController::class, 'reject']);
 
-        // // about us
-        // Route::get('/about', [AdminAboutController::class, 'index']);
-        // Route::post('/about', [AdminAboutController::class, 'store']);
-        // Route::get('/about/{id}', [AdminAboutController::class, 'show']);
-        // Route::put('/about/{id}', [AdminAboutController::class, 'update']);
-        // Route::delete('/about/{id}', [AdminAboutController::class, 'destroy']);
+        // about us
+        Route::get('/about', [AdminAboutController::class, 'index']);
+        Route::post('/about', [AdminAboutController::class, 'store']);
+        Route::get('/about/{id}', [AdminAboutController::class, 'show']);
+        Route::put('/about/{id}', [AdminAboutController::class, 'update']);
+        Route::delete('/about/{id}', [AdminAboutController::class, 'destroy']);
 
         // // chat
         // Route::get('/chat/rooms', [ChatController::class, 'rooms']);
